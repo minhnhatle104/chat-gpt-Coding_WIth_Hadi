@@ -1,3 +1,5 @@
+import '../services/api_services.dart';
+
 import '../services/services.dart';
 
 import '../constants/constants.dart';
@@ -95,7 +97,13 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                       ),
                       IconButton(
-                        onPressed: (() {}),
+                        onPressed: () async {
+                          try {
+                            await ApiService.getModels();
+                          } catch (error) {
+                            print("error $error");
+                          }
+                        },
                         icon: const Icon(
                           Icons.send,
                           color: Colors.white,
