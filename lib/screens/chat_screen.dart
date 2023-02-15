@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import '../services/api_services.dart';
 
 import '../services/services.dart';
@@ -101,7 +103,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           try {
                             await ApiService.getModels();
                           } catch (error) {
-                            print("error $error");
+                            log("error $error");
                           }
                         },
                         icon: const Icon(
