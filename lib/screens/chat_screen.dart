@@ -1,4 +1,4 @@
-import 'package:chat_gpt_demo/widgets/text_widget.dart';
+import '../services/services.dart';
 
 import '../constants/constants.dart';
 import '../widgets/chat_widget.dart';
@@ -44,30 +44,7 @@ class _ChatScreenState extends State<ChatScreen> {
         actions: [
           IconButton(
             onPressed: () async {
-              await showModalBottomSheet(
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(20),
-                  ),
-                ),
-                backgroundColor: scaffoldBackgroundColor,
-                context: context,
-                builder: (context) {
-                  return Padding(
-                    padding: const EdgeInsets.all(18.0),
-                    child: Row(
-                      children: const [
-                        Flexible(
-                          child: TextWidget(
-                            label: "Choosen Model:",
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
+              await Services.showModalSheet(context: context);
             },
             icon: const Icon(
               Icons.more_vert,
