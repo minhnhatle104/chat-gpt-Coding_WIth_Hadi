@@ -1,6 +1,8 @@
+import '../providers/models_provider.dart';
+import 'package:provider/provider.dart';
+
 import '../models/models_model.dart';
 
-import '../services/api_services.dart';
 import '../widgets/text_widget.dart';
 
 import '../constants/constants.dart';
@@ -14,12 +16,15 @@ class ModelSDropDownWidget extends StatefulWidget {
 }
 
 class _ModelSDropDownWidgetState extends State<ModelSDropDownWidget> {
-  String currentModel = "text-davinci-003";
+  String? currentModel;
 
   @override
   Widget build(BuildContext context) {
+    final modelsProvider = Provider.of<ModelsProvider>(context, listen: false);
+    currentModel = modelsProvider.getCurrentModel;
+
     return FutureBuilder<List<ModelsModel>>(
-      future: ApiService.getModels(),
+      future: modelsProvider.getAllModels(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(
@@ -49,6 +54,7 @@ class _ModelSDropDownWidgetState extends State<ModelSDropDownWidget> {
                     setState(() {
                       currentModel = value.toString();
                     });
+                    modelsProvider.setCurrentModel(value.toString());
                   },
                 ),
               );
