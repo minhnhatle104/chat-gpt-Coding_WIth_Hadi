@@ -1,5 +1,8 @@
 import 'dart:developer';
 
+import '../providers/models_provider.dart';
+import 'package:provider/provider.dart';
+
 import '../services/api_services.dart';
 
 import '../services/services.dart';
@@ -19,8 +22,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final bool _isTyping = true;
-
+  bool _isTyping = false;
   late TextEditingController textEditingController;
 
   @override
@@ -37,6 +39,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final modelsProvider = Provider.of<ModelsProvider>(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 2,
@@ -58,66 +61,74 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Flexible(
-              child: ListView.builder(
-                itemCount: 6,
-                itemBuilder: ((context, index) {
-                  return ChatWidget(
-                    msg: chatMessages[index]["msg"].toString(),
-                    chatIndex: int.parse(
-                      chatMessages[index]["chatIndex"].toString(),
+        child: Column(children: [
+          Flexible(
+            child: ListView.builder(
+              itemCount: 6,
+              itemBuilder: ((context, index) {
+                return ChatWidget(
+                  msg: chatMessages[index]["msg"].toString(),
+                  chatIndex: int.parse(
+                    chatMessages[index]["chatIndex"].toString(),
+                  ),
+                );
+              }),
+            ),
+          ),
+          if (_isTyping) ...[
+            const SpinKitThreeBounce(
+              color: Colors.white,
+              size: 18,
+            ),
+          ],
+          const SizedBox(
+            height: 15,
+          ),
+          Material(
+            color: cardColor,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      style: const TextStyle(color: Colors.white),
+                      controller: textEditingController,
+                      onSubmitted: (value) {},
+                      decoration: const InputDecoration.collapsed(
+                        hintText: "How can I help you ?",
+                        hintStyle: TextStyle(color: Colors.grey),
+                      ),
                     ),
-                  );
-                }),
+                  ),
+                  IconButton(
+                    onPressed: () async {
+                      try {
+                        setState(() {
+                          _isTyping = true;
+                        });
+                        final lst = await ApiService.sendMessage(
+                          message: textEditingController.text,
+                          modelId: modelsProvider.getCurrentModel,
+                        );
+                      } catch (error) {
+                        log("error $error");
+                      } finally {
+                        setState(() {
+                          _isTyping = false;
+                        });
+                      }
+                    },
+                    icon: const Icon(
+                      Icons.send,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
             ),
-            if (_isTyping) ...[
-              const SpinKitThreeBounce(
-                color: Colors.white,
-                size: 18,
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Material(
-                color: cardColor,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          style: const TextStyle(color: Colors.white),
-                          controller: textEditingController,
-                          onSubmitted: (value) {},
-                          decoration: const InputDecoration.collapsed(
-                            hintText: "How can I help you ?",
-                            hintStyle: TextStyle(color: Colors.grey),
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () async {
-                          try {
-                            await ApiService.getModels();
-                          } catch (error) {
-                            log("error $error");
-                          }
-                        },
-                        icon: const Icon(
-                          Icons.send,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ]
-          ],
-        ),
+          ),
+        ]),
       ),
     );
   }
