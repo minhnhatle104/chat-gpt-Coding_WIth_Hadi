@@ -67,8 +67,8 @@ class ApiService {
             chatIndex: 1,
           ),
         );
-        return chatList;
       }
+      return chatList;
     } catch (error) {
       log("error $error");
       rethrow;
