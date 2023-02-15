@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:chat_gpt_demo/widgets/text_widget.dart';
+
 import '../providers/chats_provider.dart';
 
 import '../providers/models_provider.dart';
@@ -149,6 +151,15 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> sendMessageFCT(
       {required ModelsProvider modelsProvider,
       required ChatsProvider chatsProvider}) async {
+    if (textEditingController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: TextWidget(
+          label: "Please type a message",
+        ),
+        backgroundColor: Colors.red,
+      ));
+      return;
+    }
     try {
       setState(() {
         _isTyping = true;
@@ -168,6 +179,12 @@ class _ChatScreenState extends State<ChatScreen> {
       setState(() {});
     } catch (error) {
       log("error $error");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: TextWidget(
+          label: error.toString(),
+        ),
+        backgroundColor: Colors.red,
+      ));
     } finally {
       setState(() {
         scrollListToEND();

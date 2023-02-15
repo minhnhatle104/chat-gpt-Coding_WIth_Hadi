@@ -40,6 +40,7 @@ class ApiService {
   // Send Message
   static Future<List<ChatModel>> sendMessage(
       {required String message, required String modelId}) async {
+    // log(modelId);
     try {
       var response = await http.post(
         Uri.parse("$BASE_URL/completions"),
