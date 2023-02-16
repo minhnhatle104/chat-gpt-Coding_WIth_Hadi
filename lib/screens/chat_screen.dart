@@ -13,6 +13,8 @@ import '../constants/constants.dart';
 import '../widgets/chat_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 import '../services/assets_manager.dart';
 
@@ -28,6 +30,9 @@ class _ChatScreenState extends State<ChatScreen> {
   late TextEditingController textEditingController;
   late ScrollController _listScrollController;
   late FocusNode focusNode;
+
+  SpeechToText _speechToText = SpeechToText();
+  var isListening = false;
 
   @override
   void initState() {
@@ -119,6 +124,41 @@ class _ChatScreenState extends State<ChatScreen> {
                         hintStyle: TextStyle(color: Colors.grey),
                       ),
                     ),
+                  ),
+                  IconButton(
+                    onPressed: () async {
+                      if (!isListening) {
+                        var available =
+                            await _speechToText.initialize(debugLogging: true);
+                        if (available) {
+                          setState(() {
+                            isListening = true;
+                            _speechToText.listen(
+                              onResult: (result) {
+                                setState(() {
+                                  textEditingController.text =
+                                      result.recognizedWords;
+                                });
+                              },
+                            );
+                          });
+                        }
+                      } else {
+                        setState(() {
+                          isListening = false;
+                        });
+                        _speechToText.stop();
+                      }
+                    },
+                    icon: isListening
+                        ? const Icon(
+                            Icons.mic,
+                            color: Colors.white,
+                          )
+                        : const Icon(
+                            Icons.mic_off,
+                            color: Colors.white,
+                          ),
                   ),
                   IconButton(
                     onPressed: () async {
