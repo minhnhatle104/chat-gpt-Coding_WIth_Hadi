@@ -110,6 +110,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 children: [
                   Expanded(
                     child: TextField(
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
                       focusNode: focusNode,
                       style: const TextStyle(color: Colors.white),
                       controller: textEditingController,
